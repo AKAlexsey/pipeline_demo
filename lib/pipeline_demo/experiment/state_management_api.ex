@@ -5,6 +5,7 @@ defmodule PipelineDemo.Experiment.StateManagementApi do
 
   use Agent
   alias PipelineDemo.Experiment.StateAgent
+  alias PipelineDemo.Stages.StageManagementApi
 
   #  defstruct producers: [], consumers: [], is_running: false, processed_count: 0, start_time: nil
 
@@ -33,22 +34,5 @@ defmodule PipelineDemo.Experiment.StateManagementApi do
 
   def reset(experiment_id) do
     StateAgent.set_state(experiment_id, fn _state -> StateAgent.default_values() end)
-  end
-
-  # Functions for getting experiment state
-
-  @spec duration(integer) :: integer
-  def duration(experiment_id) do
-    StateAgent.get_state(experiment_id)
-    |> (fn
-          %{start_time: nil} -> 0
-          %{start_time: naive_date_time} -> NaiveDateTime.diff(NaiveDateTime.utc_now(), naive_date_time)
-        end).()
-  end
-
-  @spec processed(integer) :: integer
-  def processed(experiment_id) do
-    StateAgent.get_state(experiment_id)
-    |> (fn %{processed: processed} -> processed end).()
   end
 end
