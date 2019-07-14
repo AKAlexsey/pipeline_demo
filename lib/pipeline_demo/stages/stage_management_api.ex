@@ -7,13 +7,13 @@ defmodule PipelineDemo.Stages.StageManagementApi do
   @max_consumers_count 5
 
   alias PipelineDemo.Experiment.StateAgent
-  alias PipelineDemo.Stages.{Consumer, Producer}
+  alias PipelineDemo.Stages.StageSupervisor
 
   @spec add_producer(integer) :: :ok | {:error, :maximum_producers_achieved}
   def add_producer(experiment_id) do
     with %{producers: producers} <- StateAgent.get_state(experiment_id),
          false <- length(producers) >= @max_producers_count,
-         {:ok, pid} <- Producer.start_link([]),
+         {:ok, pid} <- StageSupervisor.start_producer(),
          new_producers <- producers ++ [pid],
          :ok <- StateAgent.set_state(experiment_id, fn old_state -> %{old_state | producers: new_producers} end) do
       :ok
@@ -29,7 +29,7 @@ defmodule PipelineDemo.Stages.StageManagementApi do
     with %{producers: producers} <- StateAgent.get_state(experiment_id),
          true <- length(producers) > 0,
          [removed_producer | left_producers] = producers,
-         :ok <- Producer.terminate(removed_producer),
+         :ok <- StageSupervisor.terminate_child(removed_producer),
          :ok <- StateAgent.set_state(experiment_id, fn old_state -> %{old_state | producers: left_producers} end) do
       :ok
     else
@@ -43,7 +43,7 @@ defmodule PipelineDemo.Stages.StageManagementApi do
   def add_consumer(experiment_id) do
     with %{consumers: consumers} <- StateAgent.get_state(experiment_id),
          false <- length(consumers) >= @max_consumers_count,
-         {:ok, pid} <- Consumer.start_link([]),
+         {:ok, pid} <- StageSupervisor.start_consumer(),
          new_consumers <- consumers ++ [pid],
          :ok <- StateAgent.set_state(experiment_id, fn old_state -> %{old_state | consumers: new_consumers} end) do
       :ok
@@ -59,7 +59,7 @@ defmodule PipelineDemo.Stages.StageManagementApi do
     with %{consumers: consumers} <- StateAgent.get_state(experiment_id),
          true <- length(consumers) > 0,
          [removed_consumer | left_consumers] = consumers,
-         :ok <- Consumer.terminate(removed_consumer),
+         :ok <- StageSupervisor.terminate_child(removed_consumer),
          :ok <- StateAgent.set_state(experiment_id, fn old_state -> %{old_state | consumers: left_consumers} end) do
       :ok
     else

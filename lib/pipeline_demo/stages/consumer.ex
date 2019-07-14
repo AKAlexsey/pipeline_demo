@@ -3,11 +3,24 @@ defmodule PipelineDemo.Stages.Consumer do
   Every one second demand for producer.
   """
 
-  def start_link(_opts) do
-    {:ok, :rand.uniform(9999)}
+  alias PipelineDemo.Stages.Producer
+  use GenStage
+
+  def start_link(pid) do
+    random_id = :rand.uniform(9999)
+    GenStage.start_link(__MODULE__, pid, name: consumer_alias(random_id))
   end
 
-  def terminate(_opts) do
-    :ok
+  def init(pid) do
+    IO.puts("!!! init consumer")
+    {:consumer, %{active: false}, subscribe_to: [pid]}
   end
+
+  def handle_events(event, __from, state) do
+    :timer.sleep(1000)
+    IO.puts("!!! handle event #{event} pid: #{inspect(self())}")
+    {:noreply, [], state}
+  end
+
+  def consumer_alias(random_id), do: :"#{__MODULE__}##{random_id}"
 end

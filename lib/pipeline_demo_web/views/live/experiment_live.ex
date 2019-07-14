@@ -17,7 +17,7 @@ defmodule PipelineDemoWeb.ExperimentLive do
     <div>
       <%= if length(@producers) > 0 do %>
         <%= Enum.map(@producers, fn producer -> %>
-          <button style="color: red;"><%= producer %></button>
+          <button style="color: red;"><%= inspect(producer) %></button>
         <% end) %>
       <% else %>
         <button style="color: green;">No producers</button>
@@ -31,7 +31,7 @@ defmodule PipelineDemoWeb.ExperimentLive do
     <div>
       <%= if length(@consumers) > 0 do %>
         <%= Enum.map(@consumers, fn consumer -> %>
-          <button style="color: red;"><%= consumer %></button>
+          <button style="color: red;"><%= inspect(consumer) %></button>
         <% end) %>
       <% else %>
         <button style="color: green;">No consumers</button>
