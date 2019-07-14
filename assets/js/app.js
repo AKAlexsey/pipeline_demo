@@ -11,6 +11,22 @@ import css from "../css/app.css"
 //
 import "phoenix_html"
 
+// LiveView
+import LiveSocket from "phoenix_live_view"
+
+let liveSocket = new LiveSocket("/live")
+liveSocket.connect()
+
+// LiveView for IE 11 commented for a while
+// import "mdn-polyfills/NodeList.prototype.forEach"
+// import "mdn-polyfills/Element.prototype.closest"
+// import "mdn-polyfills/Element.prototype.matches"
+// import "child-replace-with-polyfill"
+// import "url-search-params-polyfill"
+// import "formdata-polyfill"
+//
+// import {LiveSocket} from "phoenix_live_view"
+
 // Import local files
 //
 // Local files can be imported directly using relative paths, for example:

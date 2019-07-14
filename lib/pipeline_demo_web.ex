@@ -24,6 +24,9 @@ defmodule PipelineDemoWeb do
       import Plug.Conn
       import PipelineDemoWeb.Gettext
       alias PipelineDemoWeb.Router.Helpers, as: Routes
+
+      # LiveView
+      import Phoenix.LiveView.Controller, only: [live_render: 3]
     end
   end
 
@@ -42,6 +45,9 @@ defmodule PipelineDemoWeb do
       import PipelineDemoWeb.ErrorHelpers
       import PipelineDemoWeb.Gettext
       alias PipelineDemoWeb.Router.Helpers, as: Routes
+
+      # LiveView
+      import Phoenix.LiveView, only: [live_render: 2, live_render: 3, live_link: 1, live_link: 2]
     end
   end
 
@@ -50,6 +56,9 @@ defmodule PipelineDemoWeb do
       use Phoenix.Router
       import Plug.Conn
       import Phoenix.Controller
+
+      # LiveView
+      import Phoenix.LiveView.Router
     end
   end
 

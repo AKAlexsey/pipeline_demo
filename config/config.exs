@@ -15,7 +15,10 @@ config :pipeline_demo, PipelineDemoWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "gPPevhJN7fn4Y3Li1f5ZOif+PPlEBHAbE5EHJ/tsQKP0misKJawzFSDSlta4sGZ8",
   render_errors: [view: PipelineDemoWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: PipelineDemo.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: PipelineDemo.PubSub, adapter: Phoenix.PubSub.PG2],
+  live_view: [
+    signing_salt: "hmcUhRGBB2VF1NzhAuVYiNr+vC3riPK5"
+  ]
 
 # Configures Elixir's Logger
 config :logger, :console,
