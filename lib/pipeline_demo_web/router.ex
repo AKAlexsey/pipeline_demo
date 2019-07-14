@@ -18,7 +18,8 @@ defmodule PipelineDemoWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    live "/thermostat", ThermostatLive, session: [:user_id]
+    live "/thermostat", ThermostatLive
+    live "/experiment", ExperimentLive
   end
 
   # Other scopes may use custom stacks.

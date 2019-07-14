@@ -5,13 +5,17 @@ defmodule PipelineDemo.Application do
 
   use Application
 
+  alias PipelineDemo.Experiment.StateAgent
+
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
       PipelineDemo.Repo,
       # Start the endpoint when the application starts
-      PipelineDemoWeb.Endpoint
+      PipelineDemoWeb.Endpoint,
+      # Start agent for store state between sessions.
+      {StateAgent, %{initial_state: %{}, id: 1}}
       # Starts a worker by calling: PipelineDemo.Worker.start_link(arg)
       # {PipelineDemo.Worker, arg},
     ]

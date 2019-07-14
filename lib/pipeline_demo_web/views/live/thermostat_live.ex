@@ -13,7 +13,7 @@ defmodule PipelineDemoWeb.ThermostatLive do
     """
   end
 
-  def mount(%{}, socket) do # end%{id: id, current_user_id: user_id}, socket) do
+  def mount(%{}, socket) do
     schedule_increasing()
     {:ok, assign(socket, :temperature, 0)}
   end
