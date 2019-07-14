@@ -52,7 +52,8 @@ config :pipeline_demo, PipelineDemoWeb.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/pipeline_demo_web/views/.*(ex)$},
-      ~r{lib/pipeline_demo_web/templates/.*(eex)$}
+      ~r{lib/pipeline_demo_web/templates/.*(eex)$},
+      ~r{lib/my_app_web/live/.*(ex)$}
     ]
   ]
 
