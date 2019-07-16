@@ -2,7 +2,7 @@ defmodule PipelineDemoWeb.ExperimentLive do
   use Phoenix.LiveView
 
   alias PipelineDemo.Experiment.{StateAgent, StateManagementApi}
-  alias PipelineDemo.Stages.StageManagementApi
+  alias PipelineDemo.Stages.{Consumer, Producer, StageManagementApi}
 
   @default_experiment_id 1
 
@@ -131,7 +131,8 @@ defmodule PipelineDemoWeb.ExperimentLive do
   end
 
   def handle_event("add_consumer", _value, socket) do
-    StageManagementApi.add_consumer(@default_experiment_id)
+    %{producers: producers} = StateAgent.get_state(@default_experiment_id)
+    StageManagementApi.add_consumer(@default_experiment_id, producers)
     {:noreply, set_socket_value(socket)}
   end
 
@@ -140,10 +141,19 @@ defmodule PipelineDemoWeb.ExperimentLive do
     {:noreply, set_socket_value(socket)}
   end
 
+  def handle_event(_any_event, _any_value, socket) do
+    {:noreply, socket}
+  end
+
   # experiment explicitly pass to function. It's identify experiment number. by default 1. Same as in supervisor.
   defp set_socket_value(socket, experiment_id \\ 1) do
-    %{is_running: is_running, processed_count: processed, start_time: start_time, producers: producers, consumers: consumers} =
-      StateAgent.get_state(experiment_id)
+    %{
+      is_running: is_running,
+      processed_count: processed,
+      start_time: start_time,
+      producers: producers,
+      consumers: consumers
+    } = StateAgent.get_state(experiment_id)
 
     duration = calculate_duration(NaiveDateTime.utc_now(), start_time)
 
@@ -151,9 +161,9 @@ defmodule PipelineDemoWeb.ExperimentLive do
     |> assign(:status, set_status_label(is_running))
     |> assign(:processed, processed)
     |> assign(:time, duration_label(duration))
-    |> assign(:speed, speed_label(processed,  duration))
-    |> assign(:producers, producers)
-    |> assign(:consumers, consumers)
+    |> assign(:speed, speed_label(processed, duration))
+    |> assign(:producers, get_name(producers, :producer))
+    |> assign(:consumers, get_name(consumers, :consumer))
   end
 
   defp set_status_label(is_running), do: if(is_running, do: "RUNNING", else: "NOT_RUNNING")
@@ -162,12 +172,19 @@ defmodule PipelineDemoWeb.ExperimentLive do
   defp calculate_duration(now, start_time), do: NaiveDateTime.diff(now, start_time)
 
   defp duration_label(duration), do: "#{duration} seconds"
+
   defp speed_label(processed, duration) do
     if(duration == 0, do: 0, else: Float.round(processed / duration, 2))
     |> (fn speed -> "#{speed} iterations per second" end).()
   end
 
-  def handle_event(any_event, any_value, socket) do
-    {:noreply, socket}
+  def get_name(pids, stage_module) do
+    name_function =
+      case stage_module do
+        :producer -> &Producer.name/1
+        :consumer -> &Consumer.name/1
+      end
+
+    Enum.map(pids, fn pid -> name_function.(pid) end)
   end
 end

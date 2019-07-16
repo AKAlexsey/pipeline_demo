@@ -1,5 +1,4 @@
 defmodule PipelineDemoWeb.ThermostatLive do
-
   use Phoenix.LiveView
 
   def render(assigns) do
@@ -28,7 +27,7 @@ defmodule PipelineDemoWeb.ThermostatLive do
     Process.send_after(self(), :increase_number, 1000)
   end
 
-  def handle_event("inc_temperature", value, socket) do
+  def handle_event("inc_temperature", _value, socket) do
     new_temp = socket.assigns.temperature + 1
     {:noreply, assign(socket, :temperature, new_temp)}
   end
@@ -38,7 +37,7 @@ defmodule PipelineDemoWeb.ThermostatLive do
     {:noreply, assign(socket, :temperature, new_temp)}
   end
 
-  def handle_event(any_event, any_value, socket) do
+  def handle_event(_any_event, _any_value, socket) do
     {:noreply, socket}
   end
 end

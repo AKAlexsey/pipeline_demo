@@ -17,12 +17,11 @@ defmodule PipelineDemo.Stages.StageSupervisor do
     DynamicSupervisor.start_child(__MODULE__, {Producer, []})
   end
 
-  def start_consumer do
-    DynamicSupervisor.start_child(__MODULE__, {Consumer, []})
+  def start_consumer(producer_pid) do
+    DynamicSupervisor.start_child(__MODULE__, {Consumer, producer_pid})
   end
 
   def terminate_child(pid) do
-    IO.puts("!!! Terminating child #{inspect(pid)}")
     DynamicSupervisor.terminate_child(__MODULE__, pid)
   end
 end

@@ -15,11 +15,12 @@ defmodule PipelineDemo.Experiment.StateAgent do
 
   def get_state(id) do
     case GenServer.whereis(agent_alias(id)) do
-      nil -> %{}
+      nil ->
+        %{}
+
       _ ->
         Agent.get(agent_alias(id), fn state -> state end)
     end
-
   end
 
   def set_state(id, function) do
