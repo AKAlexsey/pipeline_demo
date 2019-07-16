@@ -7,7 +7,7 @@ defmodule PipelineDemo.Stages.StageManagementApi do
   @max_consumers_count 5
 
   alias PipelineDemo.Experiment.StateAgent
-  alias PipelineDemo.Stages.StageSupervisor
+  alias PipelineDemo.Stages.{Consumer, StageSupervisor}
 
   @spec add_producer(integer) :: :ok | {:error, :maximum_producers_achieved}
   def add_producer(experiment_id) do
@@ -81,5 +81,17 @@ defmodule PipelineDemo.Stages.StageManagementApi do
       %{} -> {:error, :no_such_experiment}
       {:error, reason} -> {:error, reason}
     end
+  end
+
+  @spec start_requesting(integer) :: :ok
+  def start_requesting(experiment_id) do
+    %{consumers: consumers} = StateAgent.get_state(experiment_id)
+    Enum.each(consumers, fn consumer -> Consumer.set_active(consumer) end)
+  end
+
+  @spec stop_requesting(integer) :: :ok
+  def stop_requesting(experiment_id) do
+    %{consumers: consumers} = StateAgent.get_state(experiment_id)
+    Enum.each(consumers, fn consumer -> Consumer.set_not_active(consumer) end)
   end
 end

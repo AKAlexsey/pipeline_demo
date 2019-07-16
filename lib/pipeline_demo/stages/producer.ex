@@ -40,4 +40,9 @@ defmodule PipelineDemo.Stages.Producer do
   def handle_call(:your_name, _from, %{name: name} = state) do
     {:reply, name, [], state}
   end
+
+  def handle_subscribe(prod, opts, from, state) do
+    IO.puts("!! handle_subscribe #{inspect({prod, opts, from, state})}")
+    {:automatic, state}
+  end
 end

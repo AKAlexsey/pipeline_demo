@@ -107,11 +107,13 @@ defmodule PipelineDemoWeb.ExperimentLive do
 
   def handle_event("start", _value, socket) do
     StateManagementApi.start(@default_experiment_id)
+    StageManagementApi.start_requesting(@default_experiment_id)
     {:noreply, set_socket_value(socket)}
   end
 
   def handle_event("stop", _value, socket) do
     StateManagementApi.stop(@default_experiment_id)
+    StageManagementApi.stop_requesting(@default_experiment_id)
     {:noreply, set_socket_value(socket)}
   end
 
