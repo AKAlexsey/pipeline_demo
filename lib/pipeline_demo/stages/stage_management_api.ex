@@ -47,10 +47,10 @@ defmodule PipelineDemo.Stages.StageManagementApi do
 
   @spec add_consumer(integer, list) :: :ok | {:error, :maximum_consumers_achieved}
   def add_consumer(experiment_id, producers) do
-    with %{consumers: consumers} <- StateAgent.get_state(experiment_id),
+    with %{consumers: consumers, is_running: is_running} <- StateAgent.get_state(experiment_id),
          false <- length(consumers) >= @max_consumers_count,
          [producer] <- producers,
-         {:ok, pid} <- StageSupervisor.start_consumer(producer),
+         {:ok, pid} <- StageSupervisor.start_consumer(producer, is_running),
          new_consumers <- consumers ++ [pid],
          :ok <-
            StateAgent.set_state(experiment_id, fn old_state ->

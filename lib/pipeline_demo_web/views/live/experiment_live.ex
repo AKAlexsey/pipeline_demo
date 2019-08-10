@@ -1,10 +1,11 @@
 defmodule PipelineDemoWeb.ExperimentLive do
   use Phoenix.LiveView
 
-  alias PipelineDemo.Experiment.{StateAgent, StateManagementApi}
+  alias PipelineDemo.Experiment.StateManagementApi
   alias PipelineDemo.Stages.{Consumer, Producer, StageManagementApi}
 
   @default_experiment_id 1
+  @refresh_interval 500
 
   def render(assigns) do
     ~L"""
@@ -83,26 +84,17 @@ defmodule PipelineDemoWeb.ExperimentLive do
 
   # end%{id: id, current_user_id: user_id}, socket) do
   def mount(%{}, socket) do
-    schedule_increasing()
+    schedule_interval_rendering()
     {:ok, set_socket_value(socket)}
   end
 
-  def handle_info(:increase_number, socket) do
-    schedule_increasing()
-
-    StateAgent.set_state(@default_experiment_id, fn
-      %{is_running: false} = state ->
-        state
-
-      %{is_running: true, processed_count: processed} = state ->
-        Map.put(state, :processed_count, processed + 5)
-    end)
-
+  def handle_info(:render, socket) do
+    schedule_interval_rendering()
     {:noreply, set_socket_value(socket)}
   end
 
-  defp schedule_increasing do
-    Process.send_after(self(), :increase_number, 500)
+  defp schedule_interval_rendering do
+    Process.send_after(self(), :render, @refresh_interval)
   end
 
   def handle_event("start", _value, socket) do
@@ -133,7 +125,7 @@ defmodule PipelineDemoWeb.ExperimentLive do
   end
 
   def handle_event("add_consumer", _value, socket) do
-    %{producers: producers} = StateAgent.get_state(@default_experiment_id)
+    %{producers: producers} = StateManagementApi.get_state(@default_experiment_id)
     StageManagementApi.add_consumer(@default_experiment_id, producers)
     {:noreply, set_socket_value(socket)}
   end
@@ -154,10 +146,11 @@ defmodule PipelineDemoWeb.ExperimentLive do
       processed_count: processed,
       start_time: start_time,
       producers: producers,
-      consumers: consumers
-    } = StateAgent.get_state(experiment_id)
+      consumers: consumers,
+      total_time: total_time
+    } = StateManagementApi.get_state(experiment_id)
 
-    duration = calculate_duration(NaiveDateTime.utc_now(), start_time)
+    duration = calculate_duration(NaiveDateTime.utc_now(), start_time) + total_time
 
     socket
     |> assign(:status, set_status_label(is_running))

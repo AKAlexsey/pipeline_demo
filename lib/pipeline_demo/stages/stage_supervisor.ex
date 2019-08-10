@@ -5,8 +5,8 @@ defmodule PipelineDemo.Stages.StageSupervisor do
 
   alias PipelineDemo.Stages.{Consumer, Producer}
 
-  def start_link(_opts) do
-    DynamicSupervisor.start_link(__MODULE__, _opts, name: __MODULE__)
+  def start_link(opts) do
+    DynamicSupervisor.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
   def init(_opts) do
@@ -17,8 +17,11 @@ defmodule PipelineDemo.Stages.StageSupervisor do
     DynamicSupervisor.start_child(__MODULE__, {Producer, []})
   end
 
-  def start_consumer(producer_pid) do
-    DynamicSupervisor.start_child(__MODULE__, {Consumer, producer_pid})
+  def start_consumer(producer_pid, is_running) do
+    DynamicSupervisor.start_child(
+      __MODULE__,
+      {Consumer, %{producer_pid: producer_pid, is_running: is_running}}
+    )
   end
 
   def terminate_child(pid) do

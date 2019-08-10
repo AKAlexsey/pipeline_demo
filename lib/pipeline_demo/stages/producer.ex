@@ -14,7 +14,7 @@ defmodule PipelineDemo.Stages.Producer do
     {:producer, %{name: name}, dispatcher: GenStage.DemandDispatcher}
   end
 
-  def handle_demand(_demand, state) do
+  def handle_demand(demand, state) do
     {:noreply, [:rand.uniform(9999)], state}
   end
 
@@ -42,7 +42,6 @@ defmodule PipelineDemo.Stages.Producer do
   end
 
   def handle_subscribe(prod, opts, from, state) do
-    IO.puts("!! handle_subscribe #{inspect({prod, opts, from, state})}")
     {:automatic, state}
   end
 end

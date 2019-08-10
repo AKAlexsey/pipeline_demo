@@ -5,12 +5,15 @@ defmodule PipelineDemo.Stages.Consumer do
 
   # TODO rewrite demand by sending cast.
   @demand_interval 1000
+  @default_experiment_id 1
 
   use GenStage
 
-  def start_link(consumer_pid) do
+  alias PipelineDemo.Experiment.StateManagementApi
+
+  def start_link(params) do
     name = consumer_alias(:rand.uniform(9999))
-    GenStage.start_link(__MODULE__, {name, consumer_pid}, name: name)
+    GenStage.start_link(__MODULE__, Map.put(params, :name, name), name: name)
   end
 
   def name(identifier) do
@@ -34,13 +37,15 @@ defmodule PipelineDemo.Stages.Consumer do
     GenServer.cast(pid, :set_not_active)
   end
 
-  def init({name, producer_pid}) do
+  def init(%{producer_pid: producer_pid, is_running: is_running, name: name}) do
     schedule_demanding()
-    {:consumer, %{active: false, name: name, producer_pid: producer_pid}, subscribe_to: [producer_pid]}
+
+    {:consumer, %{active: is_running, name: name, producer_subscription: nil},
+     subscribe_to: [producer_pid]}
   end
 
-  def handle_events(event, __from, %{name: name} = state) do
-    IO.puts("!!! handle event #{event} name: #{name}")
+  def handle_events(_event, __from, state) do
+    StateManagementApi.increase_counter(@default_experiment_id)
     {:noreply, [], state}
   end
 
@@ -58,16 +63,20 @@ defmodule PipelineDemo.Stages.Consumer do
     {:noreply, [], %{state | active: false}}
   end
 
-  def handle_info(:ask_producer, %{producer_pid: pid, active: active} = state) do
-    IO.puts("!!! ask_producer")
-    if(active, do: GenStage.ask({pid, 1}, 1))
+  def handle_info(
+        :ask_producer,
+        %{producer_subscription: producer_subscription, active: active} = state
+      ) do
+    if(active, do: GenStage.ask(producer_subscription, 1))
     schedule_demanding()
     {:noreply, [], state}
+  end
+
+  def handle_subscribe(:producer, _subscription_options, from, state) do
+    {:manual, %{state | producer_subscription: from}}
   end
 
   defp schedule_demanding do
     Process.send_after(self(), :ask_producer, @demand_interval)
   end
-
-
 end
