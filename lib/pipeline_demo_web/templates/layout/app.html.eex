@@ -9,15 +9,10 @@
   </head>
   <body>
     <header>
-      <section class="container">
-        <nav role="navigation">
-          <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
-          </ul>
-        </nav>
-        <a href="http://phoenixframework.org/" class="phx-logo">
-          <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
-        </a>
+      <section class="row">
+        <h1>Gen stage experiment</h1>
+        <a href="<%= Routes.page_path(@conn, :index) %>">Main page</a>
+        <a href="<%= Routes.live_path(@conn, PipelineDemoWeb.ExperimentLive) %>">Pipeline experiment</a>
       </section>
     </header>
     <main role="main" class="container">
