@@ -35,8 +35,8 @@ defmodule PipelineDemo.Experiment.StateManagementApi do
 
   def reset(experiment_id) do
     %{producers: producers, consumers: consumers} = StateAgent.get_state(experiment_id)
-    Enum.each(producers, fn _producer -> StageManagementApi.terminate_producer(experiment_id) end)
     Enum.each(consumers, fn _producer -> StageManagementApi.terminate_consumer(experiment_id) end)
+    Enum.each(producers, fn _producer -> StageManagementApi.terminate_producer(experiment_id) end)
     StateAgent.set_state(experiment_id, fn _state -> StateAgent.default_values() end)
   end
 

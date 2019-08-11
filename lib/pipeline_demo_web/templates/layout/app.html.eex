@@ -11,6 +11,8 @@
     <header>
       <section class="row">
         <h1>Gen stage experiment</h1>
+        <a href="<%= Routes.page_path(@conn, :index) %>">Main page</a>
+        <a href="<%= Routes.live_path(@conn, PipelineDemoWeb.ExperimentLive) %>">Pipeline experiment</a>
       </section>
     </header>
     <main role="main" class="container">

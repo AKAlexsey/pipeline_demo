@@ -26,7 +26,7 @@ defmodule PipelineDemoWeb.ExperimentLive do
     </div>
     <div>
       <button phx-click="add_producer">Add Prod</button>
-      <button phx-click="terminate_producer">Stop Prod</button>
+      <button phx-click="terminate_producer" <%= if(@not_allowed_to_terminate_producer, do: "disabled") %>>Stop Prod</button>
     </div>
 
     <div>
@@ -159,6 +159,7 @@ defmodule PipelineDemoWeb.ExperimentLive do
     |> assign(:speed, speed_label(processed, duration))
     |> assign(:producers, get_name(producers, :producer))
     |> assign(:consumers, get_name(consumers, :consumer))
+    |> assign(:not_allowed_to_terminate_producer, length(consumers) > 0)
   end
 
   defp set_status_label(is_running), do: if(is_running, do: "RUNNING", else: "NOT_RUNNING")
