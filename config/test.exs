@@ -8,11 +8,3 @@ config :pipeline_demo, PipelineDemoWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
-
-# Configure your database
-config :pipeline_demo, PipelineDemo.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "pipeline_demo_test",
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox

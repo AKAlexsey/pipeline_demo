@@ -12,7 +12,6 @@ defmodule PipelineDemo.Application do
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
-      PipelineDemo.Repo,
       # Start the endpoint when the application starts
       PipelineDemoWeb.Endpoint,
       # Start agent for store state between sessions.

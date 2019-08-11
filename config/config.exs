@@ -7,9 +7,6 @@
 # General application configuration
 use Mix.Config
 
-config :pipeline_demo,
-  ecto_repos: [PipelineDemo.Repo]
-
 # Configures the endpoint
 config :pipeline_demo, PipelineDemoWeb.Endpoint,
   url: [host: "localhost"],
